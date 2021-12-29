@@ -4,6 +4,7 @@ import InputSample from "./InputSample";
 import UserList from "./UserList";
 import CreateUser from "./CreateUser";
 import Counter from "./Counter";
+import useInputs from "./hooks/useInputs";
 import React, {
   useState,
   useRef,
@@ -47,6 +48,7 @@ const initialState = {
 
 function reducer(state, action) {
   switch (action.type) {
+    /* custom useInputs 사용으로 변경
     case "CHANGE_INPUT":
       return {
         ...state,
@@ -55,6 +57,7 @@ function reducer(state, action) {
           [action.name]: action.value,
         },
       };
+      */
     case "CREATE_USER":
       return {
         inputs: initialState.inputs,
@@ -141,10 +144,19 @@ function App() {
   }, []);
   */
 
+  /*custom hooks
+  const { username, email } = state.inputs;
+  */
+  const [{ username, email }, onChange, reset] = useInputs({
+    username: "",
+    email: "",
+  });
   const [state, dispatch] = useReducer(reducer, initialState);
   const { users } = state;
-  const { username, email } = state.inputs;
+  const nextId = useRef(4);
 
+  //  /*custom hooks useinput으로 변경
+  /*
   const onChange = useCallback((e) => {
     const { name, value } = e.target;
     dispatch({
@@ -153,7 +165,8 @@ function App() {
       value,
     });
   }, []);
-  const nextId = useRef(4);
+  */
+
   const onCreate = useCallback(() => {
     dispatch({
       type: "CREATE_USER",
@@ -163,8 +176,9 @@ function App() {
         email,
       },
     });
+    reset();
     nextId.current += 1;
-  }, [username, email]);
+  }, [username, email, reset]);
   const count = useMemo(() => countActiveUsers(users), [users]);
 
   const onToggle = useCallback((id) => {
