@@ -1,6 +1,28 @@
-import React from "react";
+import React, { useContext, useRef } from "react";
+import { UserDispatch } from "./App";
+import useInputs from "./hooks/useInputs";
+function CreateUser(/*{ username, email, onChange, onCreate }*/) {
+  const dispatch = useContext(UserDispatch);
 
-function CreateUser({ username, email, onChange, onCreate }) {
+  const [{ username, email }, onChange, reset] = useInputs({
+    username: "",
+    email: "",
+  });
+  const nextId = useRef(4);
+
+  const onCreate = () => {
+    dispatch({
+      type: "CREATE_USER",
+      user: {
+        id: nextId.current,
+        username,
+        email,
+      },
+    });
+    reset();
+    nextId.current += 1;
+  };
+
   return (
     <div>
       <input
